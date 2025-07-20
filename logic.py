@@ -45,6 +45,20 @@ class DatabaseManager:
         except sqlite3.Error as e:
             print(f"Ошибка при заполнении таблицы: {e}")
 
+    def add_column(self, tablename, columnname, data_type):
+        alter_query = f"ALTER TABLE {tablename} ADD COLUMN {columnname} {data_type}"
+        try:
+            with self.connection:
+                cursor = self.connection.cursor()
+                cursor.execute(alter_query)
+                print(f"Колонка '{columnname}' успешно добавлена в таблицу '{tablename}'")
+                
+                cursor.execute(f"PRAGMA table_info({tablename})")
+                columns = [col[1] for col in cursor.fetchall()]
+                print(f"Текущие колонки: {columns}")
+        except sqlite3.Error as e:
+            print(f"Ошибка при добавлении колонки: {e}")
+
 
 
 if __name__ == '__main__':
@@ -126,3 +140,7 @@ if __name__ == '__main__':
         data=projects_data,
         columns="project_id, user_id, project_name, description, url, skill_id, status_id"
     )
+
+    manager.add_column("projects", "image", "TEXT")
+
+
